@@ -36,7 +36,7 @@
 <div class="top">
 <div class="container">
 
-<p class="siteTitle"><strong><a href="index.php"><img src="image/site_title.gif" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
+<p class="siteTitle"><strong><a href="index.php"><img src="image/logo.png" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
 
 <p class="catch"><strong>PHPやHTMLの学習用に作成しました（第一弾）。</strong></p>
 
