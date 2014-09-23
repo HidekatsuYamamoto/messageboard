@@ -1,9 +1,13 @@
+<!-- データ取得領域 -->
 <?php
-    // DB読み込みクラス
-    include("data_access_class.php");
-    
+    // Class Auto Loader
+    include("ClassLoader.php");
+    $aaa = new ClassLoader();
+
+?>
+<?php
     // 全データ読み込み処理
-    $inst2 = new data_access_class();
+    $instDac = new \HideSample\MessageBoard\DataAccessClass();
     
     // データ取得
     $loginId = htmlspecialchars($_REQUEST['inputted_ID']);
@@ -45,4 +49,3 @@
     $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
     $extra = 'session_check.php';
     header("Location: http://$host$uri/$extra");
-?>

@@ -24,14 +24,16 @@
 
 <!-- データ取得領域 -->
 <?php
-    // セッションスタート
-    session_start() ;
+    // Class Auto Loader
+    include("ClassLoader.php");
+    $aaa = new ClassLoader();
 
-    // DB読み込みクラス
-    include("data_access_class.php");
-    
+    // Cache Clear
+    clearstatcache();
+?>
+<?php
     // 全データ読み込み処理
-    $inst2 = new data_access_class();
+    $instDac = new \HideSample\MessageBoard\DataAccessClass();
     
     // データ書き込み
     $body_text   = htmlspecialchars($_REQUEST['inputted_message']);
@@ -58,7 +60,7 @@
             move_uploaded_file($file['tmp_name'], $filePath);
         }
     }    
-    $inst2->updateAData($message_id, $body_text, $name, $filePath);
+    $instDac->updateAData($message_id, $body_text, $name, $filePath);
 ?>
 
 <!-- ヘッダ開始 -->
@@ -67,7 +69,7 @@
 <div class="top">
 <div class="container">
 
-<p class="siteTitle"><strong><a href="index.php"><img src="image/site_title.gif" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
+<p class="siteTitle"><strong><a href="index.php"><img src="image/logo.png" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
 
 <p class="catch"><strong>PHPやHTMLの学習用に作成しました（第一弾）。</strong></p>
 
@@ -137,15 +139,15 @@
 
 <div class="section emphasis">
 
+<!-- Session Information(Login User) -->
 <?php
-    if(!isset($_SESSION['login_id'])) {
-        echo '<h2>' . $_SERVER["REMOTE_ADDR"] . '</h2>';
-    }
-    else {
-        echo '<h2>' . $_SESSION['login_id'] . '</h2>';
-    }
-    echo '<p>ログイン開始：'. date('G\:i\:s \(l\)') .'</p>';
-    echo '<p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp日：'. date("F j, Y") .'</p>';
+    // ProvideSessionInformationClass launches session_start on __construct. 
+    // and getUserName() makes some following message.
+    // <h2> Ip address or Session Name </h2>
+    // <p>  Login started time </p>
+    $instPSI = new \HideSample\MessageBoard\ProvideSessionInformation();
+    $ValueForDisplay = $instPSI->getUserName() ;
+    echo $ValueForDisplay;
 ?>
 
 </div>
@@ -223,7 +225,7 @@ Copyright (C) 2014 Hidekatsu Yamamoto. All Rights Reserved.
 <!-- データベース終了処理 -->
 <?php
     // データベース解放
-    $inst2->releaseDB();
+    $instDac->releaseDB();
     
 ?>
 

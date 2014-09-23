@@ -25,4 +25,3 @@
         header("Location: http://$host$uri/$extra");
         //exit;
     }
-?>

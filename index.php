@@ -26,6 +26,11 @@
 
 <!-- データ取得領域 -->
 <?php
+    // Class Auto Loader
+    include("ClassLoader.php");
+    $aaa = new ClassLoader();
+?>
+<?php
     // Cache Clear
     clearstatcache();
     
@@ -47,12 +52,9 @@
         $viewingPage = 1 ;
     }
     
-    // DB読み込みクラス
-    include("data_access_class.php");
-    
     // 全データ読み込み処理
-    $inst2 = new data_access_class();
-    $inst2->getAllData($viewingPage);
+    $instDac = new \HideSample\MessageBoard\DataAccessClass();
+    $instDac->getAllData($viewingPage);
     
 ?>
 
@@ -121,7 +123,7 @@
                 <dd><input type="text" name="inputted_name" size="30" autocomplete="on" list="keywords"/>
                     <datalist id="keywords">
                     <?php
-                        foreach ($inst2->getAllDataOnceByUseOfYield("messages") as $name) {
+                        foreach ($instDac->getAllDataOnceByUseOfYield("messages") as $name) {
                             echo '<option value="' . $name . '">' . $name . '</option>';
                         }
                     ?>
@@ -145,13 +147,13 @@
 
 <!-- Message Display -->    
 <?php
-    include("ForThumbnailingPictureClass.php");
+    //include("ForThumbnailingPictureClass.php");
 
     // Done or Nothing
     $sign = false ;
     
     // H.Yamamoto add for message board on July 21, 2014.
-    while($data = $inst2->getOneData()) {
+    while($data = $instDac->getOneData()) {
         // change the sign
         $sign = true ;
     
@@ -161,23 +163,23 @@
         $todayDate         = date("Y-m-d");
         
         if($creationDate == $todayDate) {
-            echo '<h1 class="pageTitle">'. $data['author'] .'さんの書き込みです。<img src="image/newicon.png" style="vertical-align: middle;" /></h1>';
+            echo '<h1 class="pageTitle">'. $data['author'] .'さんの書き込みです。<img src="image/newicon.png" style="vertical-align: middle;" /></h1>' . "\n";
         }
         else {
-            echo '<h1 class="pageTitle">'. $data['author'] .'さんの書き込みです。</h1>';
+            echo '<h1 class="pageTitle">'. $data['author'] .'さんの書き込みです。</h1>'. "\n";
         }
        
-        echo '<div class="section emphasis">' ;
-        echo '<div class="inner">' ;
-        echo '<h2>'. $data['body_text'] . '</h2>' ;
+        echo '<div class="section emphasis">' . "\n";
+        echo '<div class="inner">' . "\n";
+        echo '<h2>'. $data['body_text'] . '</h2>' . "\n";
         
         if(!empty($data['pictureInfo'])) {
             list($width,$height) = getimagesize($data['pictureInfo']);
 
-            $inst = new for_thumbnailing_picture_class();
+            $inst = new \HideSample\MessageBoard\ForThumbnailingPictureClass();
 
-            $conv_width  = $inst->figure_HorizontalSize($width,$height) ;
-            $conv_height = $inst->figure_VerticalSize($width,$height) ;
+            $conv_width  = $inst->figureHorizontalSize($width,$height) ;
+            $conv_height = $inst->figureVerticalSize($width,$height) ;
 
             print('<div align="center">');
             print('<a href="'. $data['pictureInfo'] . '" rel="lightbox">
@@ -186,39 +188,39 @@
             print('</div>');            
         }
         
-        echo '<p><form method="post" action="Edit_the_record.php" name="etr" align="right">';
-        echo '<input type="hidden" name="message_id" value="'. $data['message_id'] . '">';
-        echo '<input id="in_you_hands" type="image" src="image/pen_paper_2-512.png" width="12" height="12" alt="Submit" />';
-        echo '<label class="text_center" for="in_you_hands">&nbsp更新</label>';
+        echo '<p><form method="post" action="Edit_the_record.php" name="etr" align="right">'. "\n";
+        echo '<input type="hidden" name="message_id" value="'. $data['message_id'] . '">'. "\n";
+        echo '<input id="in_you_hands" type="image" src="image/pen_paper_2-512.png" width="12" height="12" alt="Submit" />'. "\n";
+        echo '<label class="text_center" for="in_you_hands">&nbsp更新</label>'. "\n";
         echo '</form></p>';
         
-        echo '<form method="post" action="Delete_the_record.php" name="dtr"  align="right">';
-        echo '<input type="hidden" name="message_id" value="'. $data['message_id'] . '">';
-        echo '<input id="in_you_eyes" type="image" src="image/cross_icon.jpg" width="12" height="12" alt="Submit" />';
-        echo '<label class="text_center" for="in_you_eyes">&nbsp削除</label>';
+        echo '<form method="post" action="Delete_the_record.php" name="dtr"  align="right">'. "\n";
+        echo '<input type="hidden" name="message_id" value="'. $data['message_id'] . '">'. "\n";
+        echo '<input id="in_you_eyes" type="image" src="image/cross_icon.jpg" width="12" height="12" alt="Submit" />'. "\n";
+        echo '<label class="text_center" for="in_you_eyes">&nbsp削除</label>'. "\n";
         echo '</form>';
         
-        echo '<p style="text-align: right; background-color:#ffcc99;">'. $data['creation_date'] . '</p>';
+        echo '<p style="text-align: right; background-color:#ffcc99;">'. $data['creation_date'] . '</p>'. "\n";
         echo '</div>';
         echo '</div>';       
     }
     
     // Page Control and Page Number displays
     if($sign == true) {
-        echo '<form method="post" action="index.php" name="lesson" style="float:right;" >';
-        echo '<input type="hidden" name="pageToForward" value="' . $viewingPage .'">';
-        echo '<input type="image" src="image/1178.png" width="20" height="20" alt="Submit" />';
+        echo '<form method="post" action="index.php" name="lesson" style="float:right;" >'. "\n";
+        echo '<input type="hidden" name="pageToForward" value="' . $viewingPage .'">'. "\n";
+        echo '<input type="image" src="image/1178.png" width="20" height="20" alt="Submit" />'. "\n";
         echo '</form>';
     }
     
     if($viewingPage > 1 ) {
-        echo '<form method="post" action="index.php" name="lesson" style="float:left;" >';
-        echo '<input type="hidden" name="pageToBackward" value="' . $viewingPage .'">';
-        echo '<input type="image" src="image/1179.png" width="20" height="20" alt="Submit" />';
+        echo '<form method="post" action="index.php" name="lesson" style="float:left;" >'. "\n";
+        echo '<input type="hidden" name="pageToBackward" value="' . $viewingPage .'">'. "\n";
+        echo '<input type="image" src="image/1179.png" width="20" height="20" alt="Submit" />'. "\n";
         echo '</form>';
     }
 
-    echo '<div style="text-align: center; ">Page.' . $viewingPage . '</div>';
+    echo '<div style="text-align: center; ">Page.' . $viewingPage . '</div>'. "\n";
     
 ?>
 
@@ -242,15 +244,15 @@ function googleTranslateElementInit(){
 
 <div class="section emphasis">
 
+<!-- Session Information(Login User) -->
 <?php
-    if(!isset($_SESSION['login_id'])) {
-        echo '<h2>' . $_SERVER["REMOTE_ADDR"] . '</h2>';
-    }
-    else {
-        echo '<h2>' . $_SESSION['login_id'] . '</h2>';
-    }
-    echo '<p>ログイン開始：'. date('G\:i\:s \(l\)') .'</p>';
-    echo '<p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp日：'. date("F j, Y") .'</p>';
+    // ProvideSessionInformationClass launches session_start on __construct. 
+    // and getUserName() makes some following message.
+    // <h2> Ip address or Session Name </h2>
+    // <p>  Login started time </p>
+    $instPSI = new \HideSample\MessageBoard\ProvideSessionInformation();
+    $ValueForDisplay = $instPSI->getUserName() ;
+    echo $ValueForDisplay;
 ?>
 
 </div>
@@ -280,11 +282,11 @@ function googleTranslateElementInit(){
 <?php
     $xmlTree = simplexml_load_file('http://feeds.lifehacker.jp/rss/lifehacker/index.xml');
     
-    print('<div >&nbsp</div>');
+    print('<div >&nbsp</div>'. "\n");
     
     foreach($xmlTree->channel->item as $item) {
-        print('<div><a href="'. $item->link . '">'. $item->title . '</a></div>');
-        print('<div >&nbsp</div>');
+        print('<div><a href="'. $item->link . '">'. $item->title . '</a></div>'. "\n");
+        print('<div >&nbsp</div>'. "\n");
     }
 ?>
 
@@ -336,7 +338,7 @@ Copyright (C) 2014 Hidekatsu Yamamoto. All Rights Reserved.
 <!-- データベース終了処理 -->
 <?php
     // データベース解放
-    $inst2->releaseDB();
+    $instDac->releaseDB();
     
 ?>
 

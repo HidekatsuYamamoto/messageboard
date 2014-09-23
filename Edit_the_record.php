@@ -24,19 +24,18 @@
 
 <!-- データ取得領域 -->
 <?php
-    // セッションスタート
-    session_start() ;
+    // Class Auto Loader
+    include("ClassLoader.php");
+    $aaa = new ClassLoader();
 
     // Cache Clear
     clearstatcache();
-
-    // DB読み込みクラス
-    include("data_access_class.php");
-    
+?>
+<?php
     // 全データ読み込み処理
     $message_id = $_REQUEST['message_id'];
-    $inst2 = new data_access_class();
-    $inst2->getSelectedData($message_id);
+    $instDac = new \HideSample\MessageBoard\DataAccessClass();
+    $instDac->getSelectedData($message_id);
     
 ?>
 
@@ -46,7 +45,7 @@
 <div class="top">
 <div class="container">
 
-<p class="siteTitle"><strong><a href="index.php"><img src="image/site_title.gif" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
+<p class="siteTitle"><strong><a href="index.php"><img src="image/logo.png" alt="サイトのタイトル" width="229" height="27"></a></strong></p>
 
 <p class="catch"><strong>PHPやHTMLの学習用に作成しました（第一弾）。</strong></p>
 
@@ -95,7 +94,7 @@
 
 <?php
     // H.Yamamoto add for message board on July 21, 2014.
-    $data = $inst2->getOneData();
+    $data = $instDac->getOneData();
 ?>
 
 <div id="main">
@@ -110,7 +109,7 @@
                 <dd><input type="text" name="inputted_name" size="30" autocomplete="on" list="keywords" value="<?php echo $data['author']; ?>"/>
                     <datalist id="keywords">
                     <?php
-                        foreach ($inst2->getAllDataOnceByUseOfYield("messages") as $name) {
+                        foreach ($instDac->getAllDataOnceByUseOfYield("messages") as $name) {
                             echo '<option value="' . $name . '">' . $name . '</option>';
                         }
                     ?>
@@ -141,15 +140,15 @@
 
 <div class="section emphasis">
 
+<!-- Session Information(Login User) -->
 <?php
-    if(!isset($_SESSION['login_id'])) {
-        echo '<h2>' . $_SERVER["REMOTE_ADDR"] . '</h2>';
-    }
-    else {
-        echo '<h2>' . $_SESSION['login_id'] . '</h2>';
-    }
-    echo '<p>ログイン開始：'. date('G\:i\:s \(l\)') .'</p>';
-    echo '<p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp日：'. date("F j, Y") .'</p>';
+    // ProvideSessionInformationClass launches session_start on __construct. 
+    // and getUserName() makes some following message.
+    // <h2> Ip address or Session Name </h2>
+    // <p>  Login started time </p>
+    $instPSI = new \HideSample\MessageBoard\ProvideSessionInformation();
+    $ValueForDisplay = $instPSI->getUserName() ;
+    echo $ValueForDisplay;
 ?>
 
 </div>
@@ -235,7 +234,7 @@ Copyright (C) 2014 Hidekatsu Yamamoto. All Rights Reserved.
 <!-- データベース終了処理 -->
 <?php
     // データベース解放
-    $inst2->releaseDB();
+    $instDac->releaseDB();
     
 ?>
 </body>

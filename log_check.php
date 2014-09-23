@@ -24,15 +24,16 @@
 
 <!-- データ取得領域 -->
 <?php
-    // セッションスタート
-    session_start() ;
+    // Class Auto Loader
+    include("ClassLoader.php");
+    $aaa = new ClassLoader();
 
     // Cache Clear
     clearstatcache();
-
-    // Log読み込みクラス
-    include("log_recording_class.php");
     
+    // Session Start
+    // This API must be launched before Output.
+    session_start();
 ?>
 
 <!-- ヘッダ開始 -->
@@ -91,7 +92,7 @@
 <div id="main">
 
 <?php
-    $logRecording = new log_recording_class();
+    $logRecording = new \HideSample\MessageBoard\LogRecordingClass();
     $data = $logRecording->readAllRecord();
     if(empty($data)) {
         exit ;
@@ -121,15 +122,15 @@
 
 <div class="section emphasis">
 
+<!-- Session Information(Login User) -->
 <?php
-    if(!isset($_SESSION['login_id'])) {
-        echo '<h2>' . $_SERVER["REMOTE_ADDR"] . '</h2>';
-    }
-    else {
-        echo '<h2>' . $_SESSION['login_id'] . '</h2>';
-    }
-    echo '<p>ログイン開始：'. date('G\:i\:s \(l\)') .'</p>';
-    echo '<p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp日：'. date("F j, Y") .'</p>';
+    // ProvideSessionInformationClass launches session_start on __construct. 
+    // and getUserName() makes some following message.
+    // <h2> Ip address or Session Name </h2>
+    // <p>  Login started time </p>
+    $instPSI = new \HideSample\MessageBoard\ProvideSessionInformation();
+    $ValueForDisplay = $instPSI->getUserName() ;
+    echo $ValueForDisplay;
 ?>
 
 </div>
